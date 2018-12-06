@@ -1,2 +1,5 @@
 vendor
 cf-sample-app-go
+
+# Jetbrains IDE
+.idea*

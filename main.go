@@ -1,15 +1,30 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 )
 
-// IndexHandler returns a simple message
+// IndexHandler returns a printout of the request it received for debugging.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Congratulations! Welcome to the Swisscom Application Cloud!")
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	header, _ := json.Marshal(r.Header)
+
+	w.WriteHeader(200)
+	fmt.Fprintf(w, `{
+	"request": {
+		"method": "%s", 
+		"url": "%s", 
+		"header": %s, 
+		"body": "%s"
+	}
+}`, r.Method, r.URL, header, body)
 }
 
 func main() {
