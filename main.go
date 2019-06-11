@@ -14,6 +14,9 @@ import (
 
 // IndexHandler returns a printout of the request it received for debugging.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	respHeader := 200
+	defer w.WriteHeader(respHeader)
+
 	endpoint := r.URL.Query().Get("endpoint")
 	if endpoint == "" {
 		endpoint = "/v1/auth/pcf/login"
@@ -42,7 +45,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(400)
+		respHeader = 400
 		return
 	}
 	reqBody := map[string]interface{}{
@@ -54,28 +57,30 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	reqBodyBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(400)
+		respHeader = 400
 		return
 	}
 
+	fmt.Println("body: " + string(reqBodyBytes))
+	fmt.Println("url: "+ vaultAddr+endpoint)
 	req, err := http.NewRequest(http.MethodPost, vaultAddr+endpoint, bytes.NewReader(reqBodyBytes))
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(400)
+		respHeader = 400
 		return
 	}
 	req.Header.Add("X-Vault-Token", "root")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		w.Write([]byte(err.Error()))
-		w.WriteHeader(400)
+		respHeader = 400
 		return
 	}
 	defer resp.Body.Close()
 
 	body, _ := ioutil.ReadAll(r.Body)
 	w.Write(body)
-	w.WriteHeader(resp.StatusCode)
+	respHeader = resp.StatusCode
 }
 
 func main() {
