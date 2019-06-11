@@ -89,5 +89,6 @@ func main() {
 		port = "8080"
 	}
 
+	fmt.Println("starting")
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
