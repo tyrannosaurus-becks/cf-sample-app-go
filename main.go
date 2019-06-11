@@ -79,8 +79,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	body, _ := ioutil.ReadAll(r.Body)
-	w.Write(body)
-	respHeader = resp.StatusCode
+	fmt.Printf("%d: %s\n", resp.StatusCode, body)
 }
 
 func main() {
