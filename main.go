@@ -41,7 +41,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	signature, err := signatures.Sign(pathToInstanceKey, &signatures.SignatureData{
 		SigningTime: signingTime,
 		Role:        "test-role",
-		Certificate: string(certBytes),
+		CFInstanceCertContents: string(certBytes),
 	})
 	if err != nil {
 		w.Write([]byte(err.Error()))
